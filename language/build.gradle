@@ -1,0 +1,22 @@
+plugins {
+    id "antlr"
+    id "java-library"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    antlr "org.antlr:antlr4:4.11.1"
+    compileOnly "org.graalvm.truffle:truffle-api:22.3.0"
+    compileOnly "org.jetbrains:annotations:23.0.0"
+    annotationProcessor "org.graalvm.truffle:truffle-dsl-processor:22.3.0"
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
