@@ -1,33 +1,19 @@
 package org.datlang.language.nodes;
 
-import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Specialization;
+import org.datlang.language.DatRuntimeException;
 
-import java.math.BigInteger;
+import static com.oracle.truffle.api.CompilerDirectives.transferToInterpreter;
 
 public abstract class DatUnaryMinusOperatorNode extends DatUnaryOperatorNode {
-    @Specialization(rewriteOn = ArithmeticException.class)
-    protected long negateLongWithoutOverflow(long operand) {
-        return Math.negateExact(operand);
-    }
-
-    @Specialization(replaces = "negateLongWithoutOverflow")
-    protected Object negateLong(long operand) {
-        if (operand == Long.MIN_VALUE) {
-            return MIN_LONG_NEGATION;
-        } else {
-            return -operand;
-        }
-    }
-
     @Specialization
-    @TruffleBoundary
-    protected Object negateBigInteger(BigInteger operand) {
-        var result = operand.negate();
-        try {
-            return result.longValueExact();
-        } catch (ArithmeticException ignored) {
-            return result;
+    protected long negateLong(long operand) {
+        if (operand == Long.MIN_VALUE) {
+            transferToInterpreter();
+            throw DatRuntimeException.create("Integer overflow", this);
+        }
+        else {
+            return -operand;
         }
     }
 
@@ -36,5 +22,9 @@ public abstract class DatUnaryMinusOperatorNode extends DatUnaryOperatorNode {
         return -operand;
     }
 
-    private static final BigInteger MIN_LONG_NEGATION = BigInteger.valueOf(Long.MIN_VALUE).negate();
+    @Specialization
+    protected Object illegal(Object operand) {
+        transferToInterpreter();
+        throw DatRuntimeException.create("Invalid operand", this);
+    }
 }

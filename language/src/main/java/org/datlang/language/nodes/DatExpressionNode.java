@@ -8,7 +8,7 @@ import static org.datlang.language.DatTypeSystemGen.expectBoolean;
 import static org.datlang.language.DatTypeSystemGen.expectDouble;
 import static org.datlang.language.DatTypeSystemGen.expectLong;
 
-public abstract class DatExpressionNode extends DatNode {
+public abstract class DatExpressionNode extends DatProgramNode {
     public abstract Object executeGeneric(VirtualFrame frame);
 
     public boolean executeBoolean(VirtualFrame frame) throws UnexpectedResultException {

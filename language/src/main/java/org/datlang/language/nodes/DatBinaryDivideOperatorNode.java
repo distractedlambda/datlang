@@ -6,15 +6,19 @@ import org.datlang.language.DatRuntimeException;
 
 import static com.oracle.truffle.api.CompilerDirectives.transferToInterpreter;
 
-public abstract class DatBinaryTimesOperatorNode extends DatBinaryOperatorNode {
+public abstract class DatBinaryDivideOperatorNode extends DatBinaryOperatorNode {
     @Specialization
     protected long longs(long lhs, long rhs) {
-        try {
-            return Math.multiplyExact(lhs, rhs);
+        if (rhs == 0) {
+            transferToInterpreter();
+            throw DatRuntimeException.create("Integer division by 0", this);
         }
-        catch (ArithmeticException ignored) {
+        else if (lhs == Long.MIN_VALUE && rhs == -1) {
             transferToInterpreter();
             throw DatRuntimeException.create("Integer overflow", this);
+        }
+        else {
+            return lhs / rhs;
         }
     }
 
@@ -30,7 +34,7 @@ public abstract class DatBinaryTimesOperatorNode extends DatBinaryOperatorNode {
 
     @Specialization
     protected double doubles(double lhs, double rhs) {
-        return lhs * rhs;
+        return lhs / rhs;
     }
 
     @Fallback

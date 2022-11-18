@@ -7,9 +7,11 @@ import com.oracle.truffle.api.staticobject.StaticProperty;
 import com.oracle.truffle.api.staticobject.StaticShape;
 import com.oracle.truffle.api.strings.TruffleString;
 import org.datlang.language.util.ConcurrentWeakCache;
+import org.datlang.language.util.ConcurrentWeakCacheSet;
 import org.graalvm.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,7 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
     private final ConcurrentWeakCache<TruffleString, DatSymbol> symbols = new ConcurrentWeakCache<>();
     private final ConcurrentWeakCache<Pair<DatSymbol, List<Class<?>>>, DatTupleType> tupleTypes = new ConcurrentWeakCache<>();
     private final ConcurrentWeakCache<Pair<DatSymbol, Map<DatSymbol, Class<?>>>, DatRecordType> recordTypes = new ConcurrentWeakCache<>();
+    private final ConcurrentWeakCacheSet<BigInteger> internedBigIntegers = new ConcurrentWeakCacheSet<>();
 
     @Override protected DatContext createContext(Env env) {
         return new DatContext();
@@ -92,5 +95,10 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
                 shapeBuilder.build(DatRecord.class, DatRecord.Factory.class).getFactory()
             );
         });
+    }
+
+    @TruffleBoundary
+    public @NotNull BigInteger internedBigInteger(@NotNull BigInteger candidate) {
+        return internedBigIntegers.intern(candidate);
     }
 }
