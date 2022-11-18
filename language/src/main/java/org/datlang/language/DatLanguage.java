@@ -2,6 +2,7 @@ package org.datlang.language;
 
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.TruffleLanguage;
+import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.staticobject.DefaultStaticProperty;
 import com.oracle.truffle.api.staticobject.StaticProperty;
 import com.oracle.truffle.api.staticobject.StaticShape;
@@ -10,6 +11,7 @@ import org.datlang.language.util.ConcurrentWeakCache;
 import org.datlang.language.util.ConcurrentWeakCacheSet;
 import org.graalvm.collections.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.util.LinkedHashMap;
@@ -20,6 +22,15 @@ import static com.oracle.truffle.api.CompilerAsserts.neverPartOfCompilation;
 
 @TruffleLanguage.Registration(id = "dat", name = "Dat")
 public final class DatLanguage extends TruffleLanguage<DatContext> {
+    private static final LanguageReference<DatLanguage> REFERENCE = LanguageReference.create(DatLanguage.class);
+
+    public static DatLanguage get(@Nullable Node node) {
+        return REFERENCE.get(node);
+    }
+
+    private final TruffleString trueString = TruffleString.fromJavaStringUncached("true", TruffleString.Encoding.UTF_8);
+    private final TruffleString falseString = TruffleString.fromJavaStringUncached("false", TruffleString.Encoding.UTF_8);
+
     private final ConcurrentWeakCache<String, TruffleString> literalStrings = new ConcurrentWeakCache<>();
     private final ConcurrentWeakCache<TruffleString, DatSymbol> symbols = new ConcurrentWeakCache<>();
     private final ConcurrentWeakCache<Pair<DatSymbol, List<Class<?>>>, DatTupleType> tupleTypes = new ConcurrentWeakCache<>();
@@ -100,5 +111,13 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
     @TruffleBoundary
     public @NotNull BigInteger internedBigInteger(@NotNull BigInteger candidate) {
         return internedBigIntegers.intern(candidate);
+    }
+
+    public @NotNull TruffleString getTrueString() {
+        return trueString;
+    }
+
+    public @NotNull TruffleString getFalseString() {
+        return falseString;
     }
 }
