@@ -8,12 +8,10 @@ import com.oracle.truffle.api.staticobject.StaticProperty;
 import com.oracle.truffle.api.staticobject.StaticShape;
 import com.oracle.truffle.api.strings.TruffleString;
 import org.datlang.language.util.ConcurrentWeakCache;
-import org.datlang.language.util.ConcurrentWeakCacheSet;
 import org.graalvm.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +26,16 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
         return REFERENCE.get(node);
     }
 
-    private final TruffleString trueString = TruffleString.fromJavaStringUncached("true", TruffleString.Encoding.UTF_8);
-    private final TruffleString falseString = TruffleString.fromJavaStringUncached("false", TruffleString.Encoding.UTF_8);
-
     private final ConcurrentWeakCache<String, TruffleString> literalStrings = new ConcurrentWeakCache<>();
     private final ConcurrentWeakCache<TruffleString, DatSymbol> symbols = new ConcurrentWeakCache<>();
     private final ConcurrentWeakCache<Pair<DatSymbol, List<Class<?>>>, DatTupleType> tupleTypes = new ConcurrentWeakCache<>();
     private final ConcurrentWeakCache<Pair<DatSymbol, Map<DatSymbol, Class<?>>>, DatRecordType> recordTypes = new ConcurrentWeakCache<>();
-    private final ConcurrentWeakCacheSet<BigInteger> internedBigIntegers = new ConcurrentWeakCacheSet<>();
+
+    private final TruffleString trueString = literalString("true");
+    private final TruffleString falseString = literalString("false");
+    private final TruffleString nanString = literalString("NaN");
+    private final TruffleString infinityString = literalString("∞");
+    private final TruffleString negativeInfinityString = literalString("-∞");
 
     @Override protected DatContext createContext(Env env) {
         return new DatContext();
@@ -95,7 +95,7 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
             var propertyMap = new LinkedHashMap<DatSymbol, StaticProperty>();
 
             key.getRight().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
-                var property = new DefaultStaticProperty(entry.getKey().name().toString());
+                var property = new DefaultStaticProperty(entry.getKey().getName().toString());
                 shapeBuilder.property(property, entry.getValue(), true);
                 propertyMap.put(entry.getKey(), property);
             });
@@ -108,16 +108,27 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
         });
     }
 
-    @TruffleBoundary
-    public @NotNull BigInteger internedBigInteger(@NotNull BigInteger candidate) {
-        return internedBigIntegers.intern(candidate);
-    }
-
     public @NotNull TruffleString getTrueString() {
         return trueString;
     }
 
     public @NotNull TruffleString getFalseString() {
         return falseString;
+    }
+
+    public @NotNull TruffleString booleanToString(boolean value) {
+        return value ? getTrueString() : getFalseString();
+    }
+
+    public @NotNull TruffleString getNanString() {
+        return nanString;
+    }
+
+    public @NotNull TruffleString getInfinityString() {
+        return infinityString;
+    }
+
+    public @NotNull TruffleString getNegativeInfinityString() {
+        return negativeInfinityString;
     }
 }

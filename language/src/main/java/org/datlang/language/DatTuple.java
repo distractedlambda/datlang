@@ -1,20 +1,14 @@
 package org.datlang.language;
 
-import com.oracle.truffle.api.interop.InteropLibrary;
-import com.oracle.truffle.api.interop.TruffleObject;
-import com.oracle.truffle.api.library.ExportLibrary;
 import org.jetbrains.annotations.NotNull;
 
-@ExportLibrary(InteropLibrary.class)
-public abstract class DatTuple implements TruffleObject {
-    private final @NotNull DatTupleType type;
-
+public abstract class DatTuple extends DatAggregate {
     public DatTuple(@NotNull DatTupleType type) {
-        this.type = type;
+        super(type);
     }
 
-    public @NotNull DatTupleType type() {
-        return type;
+    public final @NotNull DatTupleType getTupleType() {
+        return (DatTupleType) getType();
     }
 
     @FunctionalInterface

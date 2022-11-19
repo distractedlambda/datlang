@@ -1,5 +1,6 @@
 package org.datlang.language;
 
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.staticobject.StaticProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -8,8 +9,7 @@ import java.util.Map;
 
 import static com.oracle.truffle.api.CompilerAsserts.neverPartOfCompilation;
 
-public final class DatRecordType {
-    private final @NotNull DatSymbol tag;
+public final class DatRecordType extends DatAggregateType {
     private final @NotNull @Unmodifiable Map<@NotNull DatSymbol, @NotNull StaticProperty> properties;
     private final @NotNull DatRecord.Factory instanceFactory;
 
@@ -18,13 +18,9 @@ public final class DatRecordType {
         @NotNull @Unmodifiable Map<@NotNull DatSymbol, @NotNull StaticProperty> properties,
         @NotNull DatRecord.Factory instanceFactory
     ) {
-        this.tag = tag;
+        super(tag);
         this.properties = properties;
         this.instanceFactory = instanceFactory;
-    }
-
-    public @NotNull DatSymbol tag() {
-        return tag;
     }
 
     public @NotNull @Unmodifiable Map<@NotNull DatSymbol, @NotNull StaticProperty> properties() {
@@ -34,5 +30,13 @@ public final class DatRecordType {
 
     public @NotNull DatRecord newInstance() {
         return instanceFactory.newRecord(this);
+    }
+
+    @Override protected @NotNull CallTarget createStringBuildingFunction() {
+        return null;
+    }
+
+    @Override protected @NotNull CallTarget createHashingFunction() {
+        return null;
     }
 }

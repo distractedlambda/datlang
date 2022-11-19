@@ -17,7 +17,7 @@ public final class DatSymbol implements TruffleObject, Comparable<DatSymbol> {
         this.name = name;
     }
 
-    public @NotNull TruffleString name() {
+    public @NotNull TruffleString getName() {
         return name;
     }
 

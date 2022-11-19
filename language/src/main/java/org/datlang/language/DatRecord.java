@@ -2,15 +2,13 @@ package org.datlang.language;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class DatRecord {
-    private final @NotNull DatRecordType type;
-
+public abstract class DatRecord extends DatAggregate {
     public DatRecord(@NotNull DatRecordType type) {
-        this.type = type;
+        super(type);
     }
 
-    public @NotNull DatRecordType type() {
-        return type;
+    public final @NotNull DatRecordType getRecordType() {
+        return (DatRecordType) getType();
     }
 
     @FunctionalInterface
