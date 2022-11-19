@@ -10,18 +10,8 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import static java.util.Objects.requireNonNull;
 
 public abstract class DatAggregateType {
-    private final @NotNull DatSymbol tag;
-
     private volatile @Nullable CallTarget stringBuildingFunction;
     private volatile @Nullable CallTarget hashingFunction;
-
-    protected DatAggregateType(@NotNull DatSymbol tag) {
-        this.tag = tag;
-    }
-
-    public final @NotNull DatSymbol getTag() {
-        return tag;
-    }
 
     @TruffleBoundary
     public final @NotNull CallTarget getStringBuildingFunction() {

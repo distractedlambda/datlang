@@ -5,7 +5,7 @@ import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.staticobject.StaticProperty;
 import org.jetbrains.annotations.NotNull;
 
-public final class DatTupleType extends DatAggregateType {
+public final class DatTupleType extends DatTaggedAggregateType {
     @CompilationFinal(dimensions = 1) private final @NotNull StaticProperty @NotNull[] properties;
     private final @NotNull DatTuple.Factory instanceFactory;
 

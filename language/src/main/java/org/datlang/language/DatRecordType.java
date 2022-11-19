@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static com.oracle.truffle.api.CompilerAsserts.neverPartOfCompilation;
 
-public final class DatRecordType extends DatAggregateType {
+public final class DatRecordType extends DatTaggedAggregateType {
     private final @NotNull @Unmodifiable Map<@NotNull DatSymbol, @NotNull StaticProperty> properties;
     private final @NotNull DatRecord.Factory instanceFactory;
 
