@@ -1,7 +1,7 @@
 grammar Dat;
 
 @header {
-package org.datlang.language;
+package org.datlang.language.compiler;
 }
 
 file:
@@ -73,12 +73,16 @@ expression:
   | 'let' lhs=pattern '=' rhs=expression 'in' body=expression #ValueBindingExpression
   | 'let' binding=functionBinding 'in' body=expression #FunctionBindingExpression
   | 'let' 'rec' bindings+=functionBinding ('and' bindings+=functionBinding)* 'in' body=expression #RecursiveFunctionBindingExpression
+  | 'match' subject=expression '|' patterns+=pattern '->' bodies+=expression ('|' patterns+=pattern '->' bodies+=expression)* #MatchExpression
   | label=LowerIdentifier '#' body=expression #LabeledExpression
+  | '\\' (parameters+=pattern)+ '->' body=expression #LambdaExpression
+  | '\\' '|' patterns+=pattern '->' bodies+=expression ('|' patterns+=pattern '->' bodies+=expression)* #MatchLambdaExpression
 ;
 
 functionBinding:
     name=LowerIdentifier (args+=pattern)* '=' body=expression;
 
+KwAnd: 'and';
 KwBegin: 'begin';
 KwBreak: 'break';
 KwDef: 'def';
@@ -92,6 +96,7 @@ KwIf: 'if';
 KwImport: 'import';
 KwIn: 'in';
 KwLet: 'let';
+KwMatch: 'match';
 KwRec: 'rec';
 KwRepeat: 'repeat';
 KwThen: 'then';
@@ -104,6 +109,7 @@ KwWhile: 'while';
 Ampersand2: '&&';
 Ampersand: '&';
 At: '@';
+Backslash: '\\';
 Bang: '!';
 BangEquals2: '!==';
 BangEquals: '!=';
@@ -123,6 +129,7 @@ LCurly: '{';
 LParen: '(';
 LSquare: '[';
 Minus: '-';
+MinusRAngle: '->';
 Percent: '%';
 Pipe2: '||';
 Pipe: '|';

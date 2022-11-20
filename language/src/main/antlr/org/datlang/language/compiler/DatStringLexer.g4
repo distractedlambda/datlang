@@ -1,7 +1,7 @@
 lexer grammar DatStringLexer;
 
 @header {
-package org.datlang.language;
+package org.datlang.language.compiler;
 }
 
 BellEscape:
