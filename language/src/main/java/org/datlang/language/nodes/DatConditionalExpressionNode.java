@@ -3,7 +3,6 @@ package org.datlang.language.nodes;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import com.oracle.truffle.api.profiles.ConditionProfile;
-import org.jetbrains.annotations.NotNull;
 
 public final class DatConditionalExpressionNode extends DatExpressionNode {
     @Child private DatExpressionNode conditionNode;
@@ -60,13 +59,5 @@ public final class DatConditionalExpressionNode extends DatExpressionNode {
         } else {
             return alternateNode.executeDouble(frame);
         }
-    }
-
-    @Override public @NotNull DatExpressionNode cloneUninitialized() {
-        return new DatConditionalExpressionNode(
-            conditionNode.cloneUninitialized(),
-            consequentNode.cloneUninitialized(),
-            alternateNode.cloneUninitialized()
-        );
     }
 }

@@ -9,7 +9,7 @@ file:
 
 topLevelItem:
     'import' moduleName=UpperIdentifier #TopLevelImport
-  | visibility=('fileprivate' | 'export')? 'def' name=LowerIdentifier (args+=pattern)* '=' body=expression #TopLevelFunction
+  | visibility=('fileprivate' | 'export')? 'def' binding=functionBinding #TopLevelFunction
   | visibility=('fileprivate' | 'export')? 'def' lhs=pattern '=' rhs=expression #TopLevelBinding
   | expression #TopLevelExpression
 ;
@@ -70,8 +70,14 @@ expression:
   | kind=('while' | 'until') condition=expression 'do' body=expression #PreCheckedLoopExpression
   | 'repeat' body=expression kind=('while' | 'until') condition=expression #PostCheckedLoopExpression
   | 'begin' body=expression 'end' #BeginEndExpression
+  | 'let' lhs=pattern '=' rhs=expression 'in' body=expression #ValueBindingExpression
+  | 'let' binding=functionBinding 'in' body=expression #FunctionBindingExpression
+  | 'let' 'rec' bindings+=functionBinding ('and' bindings+=functionBinding)* 'in' body=expression #RecursiveFunctionBindingExpression
   | label=LowerIdentifier '#' body=expression #LabeledExpression
 ;
+
+functionBinding:
+    name=LowerIdentifier (args+=pattern)* '=' body=expression;
 
 KwBegin: 'begin';
 KwBreak: 'break';
