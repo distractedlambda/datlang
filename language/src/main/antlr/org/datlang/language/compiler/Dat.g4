@@ -5,13 +5,12 @@ package org.datlang.language.compiler;
 }
 
 file:
-    (topLevelItem ';;'?)* EOF;
+    (items+=topLevelItem ';;')* EOF;
 
 topLevelItem:
     'import' moduleName=UpperIdentifier #TopLevelImport
   | visibility=('fileprivate' | 'export')? 'def' binding=functionBinding #TopLevelFunction
   | visibility=('fileprivate' | 'export')? 'def' lhs=pattern '=' rhs=expression #TopLevelBinding
-  | expression #TopLevelExpression
 ;
 
 pattern:
@@ -51,7 +50,8 @@ expression:
   | '{' (keys+=expression ':' values+=expression (',' keys+=expression ':' values+=expression)* ','?)? '}' #MapExpression
   | 'true' #TrueExpression
   | 'false' #FalseExpression
-  | callee=expression (arguments+=expression)+ #CallExpression
+  | (moduleName=UpperIdentifier '.')? name=LowerIdentifier (arguments+=expression)+ #NamedFunctionCallExpression
+  | '(' callee=expression ')' (arguments+=expression)+ #ComputedFunctionCallExpression
   | op=('!' | '~' | '+' | '-') operand=expression #PrefixOpExpression
   | <assoc=right> lhs=expression '**' rhs=expression #PowExpression
   | lhs=expression op=('*' | '/' | '%') rhs=expression #MulDivRemExpression
@@ -80,7 +80,7 @@ expression:
 ;
 
 functionBinding:
-    name=LowerIdentifier (args+=pattern)* '=' body=expression;
+    name=LowerIdentifier (args+=pattern)+ '=' body=expression;
 
 KwAnd: 'and';
 KwBegin: 'begin';

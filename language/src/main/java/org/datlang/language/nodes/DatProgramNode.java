@@ -6,9 +6,9 @@ import org.jetbrains.annotations.Nullable;
 public abstract class DatProgramNode extends DatNode {
     private int sourceOffset = -1, sourceLength;
 
-    public final void setSourceRange(int offset, int length) {
-        sourceOffset = offset;
-        sourceLength = length;
+    public final void setSourceRange(int start, int end) {
+        sourceOffset = start;
+        sourceLength = end - start;
     }
 
     @Override public final @Nullable SourceSection getSourceSection() {
