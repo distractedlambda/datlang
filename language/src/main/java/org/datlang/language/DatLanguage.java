@@ -7,7 +7,8 @@ import com.oracle.truffle.api.staticobject.DefaultStaticProperty;
 import com.oracle.truffle.api.staticobject.StaticProperty;
 import com.oracle.truffle.api.staticobject.StaticShape;
 import com.oracle.truffle.api.strings.TruffleString;
-import org.datlang.language.util.ConcurrentWeakCache;
+import org.datlang.language.util.ConcurrentWeakCacheMap;
+import org.datlang.language.util.ConcurrentWeakCacheSet;
 import org.graalvm.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,40 +27,39 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
         return REFERENCE.get(node);
     }
 
-    private final ConcurrentWeakCache<String, TruffleString> literalStrings = new ConcurrentWeakCache<>();
-    private final ConcurrentWeakCache<TruffleString, DatSymbol> symbols = new ConcurrentWeakCache<>();
-    private final ConcurrentWeakCache<Pair<DatSymbol, List<Class<?>>>, DatTupleType> tupleTypes = new ConcurrentWeakCache<>();
-    private final ConcurrentWeakCache<Pair<DatSymbol, Map<DatSymbol, Class<?>>>, DatRecordType> recordTypes = new ConcurrentWeakCache<>();
+    private final ConcurrentWeakCacheSet<TruffleString> internedStrings = new ConcurrentWeakCacheSet<>();
+    private final ConcurrentWeakCacheMap<TruffleString, DatSymbol> symbols = new ConcurrentWeakCacheMap<>();
+    private final ConcurrentWeakCacheMap<Pair<DatSymbol, List<Class<?>>>, DatTupleType> tupleTypes = new ConcurrentWeakCacheMap<>();
+    private final ConcurrentWeakCacheMap<Pair<DatSymbol, Map<DatSymbol, Class<?>>>, DatRecordType> recordTypes = new ConcurrentWeakCacheMap<>();
 
-    private final TruffleString trueString = literalString("true");
-    private final TruffleString falseString = literalString("false");
-    private final TruffleString nanString = literalString("NaN");
-    private final TruffleString infinityString = literalString("∞");
-    private final TruffleString negativeInfinityString = literalString("-∞");
+    private final TruffleString trueString = internedString("true");
+    private final TruffleString falseString = internedString("false");
+    private final TruffleString nanString = internedString("NaN");
+    private final TruffleString infinityString = internedString("∞");
+    private final TruffleString negativeInfinityString = internedString("-∞");
 
     @Override protected DatContext createContext(Env env) {
         return new DatContext();
     }
 
     @TruffleBoundary
-    public @NotNull TruffleString literalString(@NotNull String string) {
-        return literalStrings.getOrCompute(
-            string,
-            str -> TruffleString.fromJavaStringUncached(str, TruffleString.Encoding.UTF_8)
-        );
+    public @NotNull TruffleString internedString(@NotNull TruffleString string) {
+        return internedStrings.intern(string.switchEncodingUncached(TruffleString.Encoding.UTF_8));
+    }
+
+    @TruffleBoundary
+    public @NotNull TruffleString internedString(@NotNull String string) {
+        return internedString(TruffleString.fromJavaStringUncached(string, TruffleString.Encoding.UTF_8));
     }
 
     @TruffleBoundary
     public @NotNull DatSymbol symbol(@NotNull TruffleString name) {
-        return symbols.getOrCompute(
-            name.switchEncodingUncached(TruffleString.Encoding.UTF_8),
-            DatSymbol::new
-        );
+        return symbols.getOrCompute(internedString(name), DatSymbol::new);
     }
 
     @TruffleBoundary
     public @NotNull DatSymbol symbol(@NotNull String name) {
-        return symbols.getOrCompute(literalString(name), DatSymbol::new);
+        return symbols.getOrCompute(internedString(name), DatSymbol::new);
     }
 
     public @NotNull DatTupleType tupleType(

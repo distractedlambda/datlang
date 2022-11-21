@@ -19,7 +19,7 @@ public final class DatTupleType extends DatTaggedAggregateType {
         this.instanceFactory = instanceFactory;
     }
 
-    public int length() {
+    public int getLength() {
         return properties.length;
     }
 

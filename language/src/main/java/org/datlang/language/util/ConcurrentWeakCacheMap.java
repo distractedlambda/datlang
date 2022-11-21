@@ -7,7 +7,7 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-public final class ConcurrentWeakCache<K, V> {
+public final class ConcurrentWeakCacheMap<K, V> {
     private final ConcurrentHashMap<K, ValueReference<K, V>> storage = new ConcurrentHashMap<>();
     private final ReferenceQueue<V> queue = new ReferenceQueue<>();
 

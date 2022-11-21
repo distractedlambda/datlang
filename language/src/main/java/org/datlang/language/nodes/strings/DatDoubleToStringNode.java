@@ -32,6 +32,6 @@ public abstract class DatDoubleToStringNode extends DatNode {
 
     @TruffleBoundary
     protected static @NotNull TruffleString doubleToLiteralString(double value) {
-        return DatLanguage.get(null).literalString(Double.toString(value));
+        return DatLanguage.get(null).internedString(Double.toString(value));
     }
 }
