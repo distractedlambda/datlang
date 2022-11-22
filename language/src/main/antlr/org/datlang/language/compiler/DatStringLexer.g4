@@ -35,7 +35,7 @@ DoubleQuoteEscape:
     '\\"';
 
 WhitespaceSkippingEscape:
-    '\\' [\p{White_Space}]+;
+    '\\' [\p{White_Space}]+ -> skip;
 
 OctalEscape:
     '\\' OctalDigit OctalDigit OctalDigit;
@@ -49,8 +49,8 @@ UnicodeEscape:
 WideUnicodeEscape:
     '\\U' HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit;
 
-LiteralCharacter:
-    [^\\"\p{Cc}\p{Cf}\p{Zl}\p{Zp}];
+LiteralSegment:
+    [^\\"\p{Cc}\p{Cf}\p{Zl}\p{Zp}]+;
 
 fragment OctalDigit:
     [0-7];

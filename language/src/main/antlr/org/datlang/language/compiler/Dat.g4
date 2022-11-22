@@ -18,10 +18,12 @@ pattern:
   | '_' #WildcardPattern
   | 'true' #TruePattern
   | 'false' #FalsePattern
-  | token=BinNumber #BinNumberPattern
-  | token=OctNumber #OctNumberPattern
-  | token=DecNumber #DecNumberPattern
-  | token=HexNumber #HexNumberPattern
+  | token=BinInteger #BinIntegerPattern
+  | token=OctInteger #OctIntegerPattern
+  | token=DecInteger #DecIntegerPattern
+  | token=DecReal #DecRealPattern
+  | token=HexInteger #HexIntegerPattern
+  | token=HexReal #HexRealPattern
   | token=String #StringPattern
   | name=UpperIdentifier ('(' ')')? #SymbolPattern
   | '(' ')' #UnitPattern
@@ -36,10 +38,12 @@ pattern:
 expression:
     (moduleName=UpperIdentifier '.')? name=LowerIdentifier #BindingReferenceExpression
   | name=UpperIdentifier ('(' ')')? #SymbolExpression
-  | token=BinNumber #BinNumberExpression
-  | token=OctNumber #OctNumberExpression
-  | token=DecNumber #DecNumberExpression
-  | token=HexNumber #HexNumberExpression
+  | token=BinInteger #BinIntegerExpression
+  | token=OctInteger #OctIntegerExpression
+  | token=DecInteger #DecIntegerExpression
+  | token=DecReal #DecRealExpression
+  | token=HexInteger #HexIntegerExpression
+  | token=HexReal #HexRealExpression
   | token=String #StringExpression
   | '(' ')' #UnitExpression
   | '(' inner=expression ')' #ParenthesizedExpression
@@ -152,17 +156,23 @@ Underscore: '_';
 String:
     '"' StringToken+ '"';
 
-BinNumber:
-    '0' [bB] BinDigit+ BinExponent?;
+BinInteger:
+    '0' [bB] BinDigit ('_' BinDigit)* ([pP] '+'? DecDigit ('_' DecDigit)*)?;
 
-OctNumber:
-    '0' [oO] OctDigit+ BinExponent?;
+OctInteger:
+    '0' [oO] OctDigit ('_' OctDigit)* ([pP] '+'? DecDigit ('_' OctDigit)*)?;
 
-DecNumber:
-    ('.' DecDigit+ | DecDigit+ ('.' DecDigit*)?) DecExponent?;
+DecInteger:
+    DecDigit ('_' DecDigit)* ([eE] '+'? DecDigit ('_' DecDigit)*)?;
 
-HexNumber:
-    '0' [xX] ('.' HexDigit+ | HexDigit+ ('.' HexDigit*)?) BinExponent?;
+DecReal:
+    ('.' DecDigit ('_' DecDigit)* | DecDigit ('_' DecDigit)* '.' (DecDigit ('_' DecDigit)*)?) ([eE] [+\-]? DecDigit ('_' DecDigit)*)?;
+
+HexInteger:
+    '0' [xX] HexDigit ('_' HexDigit)* ([pP] '+'? DecDigit ('_' DecDigit)*)?;
+
+HexReal:
+    '0' [xX] ('.' HexDigit ('_' HexDigit)* | HexDigit ('_' HexDigit)* '.' (HexDigit ('_' HexDigit)*)?) ([pP] [+\-]? DecDigit ('_' DecDigit)*)?;
 
 LowerIdentifier:
     [\p{Ll}] IdentifierRest*;
