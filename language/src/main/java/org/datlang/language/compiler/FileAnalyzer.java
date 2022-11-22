@@ -48,7 +48,6 @@ import java.util.BitSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static java.lang.Integer.decode;
 import static java.lang.Integer.parseInt;
 import static java.lang.Integer.parseUnsignedInt;
 

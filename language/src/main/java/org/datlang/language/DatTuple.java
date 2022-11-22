@@ -1,18 +1,24 @@
 package org.datlang.language;
 
+import com.oracle.truffle.api.CompilerDirectives.ValueType;
+import com.oracle.truffle.api.interop.TruffleObject;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class DatTuple extends DatAggregate {
-    public DatTuple(@NotNull DatTupleType type) {
-        super(type);
+@ValueType
+public final class DatTuple implements TruffleObject {
+    private final @NotNull DatTupleType type;
+    private final @NotNull Object storage;
+
+    public DatTuple(@NotNull DatTupleType type, @NotNull Object storage) {
+        this.type = type;
+        this.storage = storage;
     }
 
-    public final @NotNull DatTupleType getTupleType() {
-        return (DatTupleType) getType();
+    public @NotNull DatTupleType getType() {
+        return type;
     }
 
-    @FunctionalInterface
-    public interface Factory {
-        @NotNull DatTuple newTuple(@NotNull DatTupleType type);
+    public @NotNull Object getStorage() {
+        return storage;
     }
 }

@@ -8,9 +8,8 @@ import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
 import com.oracle.truffle.api.strings.TruffleString;
 import com.oracle.truffle.api.strings.TruffleStringBuilder;
-import org.datlang.language.DatAggregate;
 import org.datlang.language.DatAggregateType;
-import org.datlang.language.DatSymbol;
+import org.datlang.language.DatLoneTag;
 
 @GenerateUncached
 public abstract class DatValueDisplayStringBuildingNode extends DatStringBuildingNode {
@@ -148,28 +147,9 @@ public abstract class DatValueDisplayStringBuildingNode extends DatStringBuildin
     @Specialization
     protected void doSymbol(
         TruffleStringBuilder builder,
-        DatSymbol value,
+        DatLoneTag value,
         @Cached TruffleStringBuilder.AppendStringNode appendStringNode
     ) {
         appendStringNode.execute(builder, value.getName());
-    }
-
-    @Specialization(guards = "value.getType() == cachedType")
-    protected void doAggregateDirect(
-        TruffleStringBuilder builder,
-        DatAggregate value,
-        @Cached("value.getType()") DatAggregateType cachedType,
-        @Cached("create(cachedType.getStringBuildingFunction())") DirectCallNode callNode
-    ) {
-        callNode.call(builder, value);
-    }
-
-    @Specialization(replaces = "doAggregateDirect")
-    protected void doAggregateIndirect(
-        TruffleStringBuilder builder,
-        DatAggregate value,
-        @Cached IndirectCallNode callNode
-    ) {
-        callNode.call(value.getType().getStringBuildingFunction(), builder, value);
     }
 }

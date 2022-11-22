@@ -7,8 +7,8 @@ import com.oracle.truffle.api.strings.TruffleString;
     boolean.class,
     double.class,
     long.class,
+    DatLoneTag.class,
     DatRecord.class,
-    DatSymbol.class,
     DatTuple.class,
     TruffleString.class,
 })
