@@ -1,16 +1,20 @@
-package org.datlang.language.nodes;
+package org.datlang.language.nodes.aggregates;
 
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Cached;
-import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.strings.TruffleString;
+import org.datlang.language.nodes.DatNode;
 import org.datlang.language.runtime.DatTuple;
 import org.datlang.language.runtime.DatTupleType;
+import org.jetbrains.annotations.NotNull;
 
-@NodeField(name = "tag", type = TruffleString.class)
 public abstract class DatNewTupleNode extends DatNode {
-    protected abstract TruffleString getTag();
+    private final @NotNull TruffleString tag;
+
+    protected DatNewTupleNode(@NotNull TruffleString tag) {
+        this.tag = tag;
+    }
 
     public abstract DatTuple execute(Object[] elements);
 
@@ -27,6 +31,24 @@ public abstract class DatNewTupleNode extends DatNode {
 
     @TruffleBoundary
     protected DatTupleType chooseType(Object[] elements) {
-        throw new UnsupportedOperationException("TODO");
+        var elementTypes = new Class<?>[elements.length];
+
+        for (var i = 0; i < elements.length; i++) {
+            var objectType = elements[i].getClass();
+            if (objectType == Boolean.class) {
+                elementTypes[i] = boolean.class;
+            }
+            else if (objectType == Long.class) {
+                elementTypes[i] = long.class;
+            }
+            else if (objectType == Double.class) {
+                elementTypes[i] = double.class;
+            }
+            else {
+                elementTypes[i] = Object.class;
+            }
+        }
+
+        return getLanguage().getTupleType(tag, elementTypes);
     }
 }

@@ -26,11 +26,13 @@ import org.datlang.language.compiler.DatParser.FileContext;
 import org.datlang.language.compiler.DatParser.HexIntegerExpressionContext;
 import org.datlang.language.compiler.DatParser.HexRealExpressionContext;
 import org.datlang.language.compiler.DatParser.OctIntegerExpressionContext;
+import org.datlang.language.compiler.DatParser.ParenthesizedExpressionContext;
 import org.datlang.language.compiler.DatParser.StringExpressionContext;
 import org.datlang.language.compiler.DatParser.TopLevelBindingContext;
 import org.datlang.language.compiler.DatParser.TopLevelFunctionContext;
 import org.datlang.language.compiler.DatParser.TopLevelImportContext;
 import org.datlang.language.compiler.DatParser.TrueExpressionContext;
+import org.datlang.language.compiler.DatParser.TupleExpressionContext;
 import org.datlang.language.nodes.DatExpressionNode;
 import org.datlang.language.nodes.DatProgramNode;
 import org.datlang.language.nodes.constants.DatDoubleConstantNodeGen;
@@ -38,6 +40,7 @@ import org.datlang.language.nodes.constants.DatFalseConstantNodeGen;
 import org.datlang.language.nodes.constants.DatLongConstantNodeGen;
 import org.datlang.language.nodes.constants.DatObjectConstantNodeGen;
 import org.datlang.language.nodes.constants.DatTrueConstantNodeGen;
+import org.datlang.language.nodes.expressions.DatTupleExpressionNodeGen;
 import org.datlang.language.runtime.DatParseException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -154,9 +157,35 @@ public final class FileAnalyzer implements ANTLRErrorListener {
         else if (context instanceof StringExpressionContext stringExpressionContext) {
             return analyze(stringExpressionContext);
         }
+        else if (context instanceof ParenthesizedExpressionContext parenthesizedExpressionContext) {
+            return analyze(parenthesizedExpressionContext);
+        }
+        else if (context instanceof TupleExpressionContext tupleExpressionContext) {
+            return analyze(tupleExpressionContext);
+        }
         else {
             throw new ClassCastException();
         }
+    }
+
+    private @NotNull DatExpressionNode analyze(@NotNull TupleExpressionContext context) {
+        return DatTupleExpressionNodeGen.create(
+            tagTokenToInternedString(context.tag),
+            context.elements.stream().map(this::analyze).toArray(DatExpressionNode[]::new)
+        );
+    }
+
+    private @NotNull TruffleString tagTokenToInternedString(@Nullable Token token) {
+        if (token == null) {
+            return language.getEmptyString();
+        }
+        else {
+            return language.getInternedString(token.getText());
+        }
+    }
+
+    private @NotNull DatExpressionNode analyze(@NotNull ParenthesizedExpressionContext context) {
+        return analyze(context.inner);
     }
 
     private @NotNull DatExpressionNode analyze(@NotNull StringExpressionContext context) {

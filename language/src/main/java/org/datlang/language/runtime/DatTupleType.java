@@ -4,7 +4,9 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.staticobject.StaticProperty;
+import com.oracle.truffle.api.staticobject.StaticShape;
 import com.oracle.truffle.api.strings.TruffleString;
+import org.datlang.language.DatLanguage;
 import org.jetbrains.annotations.NotNull;
 
 public final class DatTupleType extends DatTaggedAggregateType {
@@ -14,13 +16,22 @@ public final class DatTupleType extends DatTaggedAggregateType {
     private final @NotNull ElementProperty @NotNull[] elementProperties;
 
     public DatTupleType(
+        @NotNull DatLanguage language,
         @NotNull TruffleString tag,
-        @NotNull DatTuple.Factory instanceFactory,
-        @NotNull ElementProperty @NotNull[] elementProperties
+        @NotNull Class<?> @NotNull[] elementTypes
     ) {
         super(tag);
-        this.elementProperties = elementProperties;
-        this.instanceFactory = instanceFactory;
+
+        elementProperties = new ElementProperty[elementTypes.length];
+
+        var shapeBuilder = StaticShape.newBuilder(language);
+
+        for (var i = 0; i < elementProperties.length; i++) {
+            elementProperties[i] = new ElementProperty(i, elementTypes[i]);
+            shapeBuilder.property(elementProperties[i], elementTypes[i], true);
+        }
+
+        instanceFactory = shapeBuilder.build(DatTuple.class, DatTuple.Factory.class).getFactory();
     }
 
     @ExplodeLoop
@@ -101,7 +112,7 @@ public final class DatTupleType extends DatTaggedAggregateType {
         private final @NotNull String id;
         private final @NotNull Class<?> type;
 
-        public ElementProperty(int index, @NotNull Class<?> type) {
+        private ElementProperty(int index, @NotNull Class<?> type) {
             this.id = Integer.toString(index);
             this.type = type;
         }

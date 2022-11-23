@@ -4,14 +4,30 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.strings.TruffleString;
-import org.datlang.language.runtime.DatLoneTag;
+import org.datlang.language.runtime.DatTupleType;
 import org.datlang.language.util.ConcurrentWeakCacheMap;
 import org.datlang.language.util.ConcurrentWeakCacheSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 @TruffleLanguage.Registration(id = "dat", name = "Dat")
 public final class DatLanguage extends TruffleLanguage<DatContext> {
+    private record TupleTypeInputs(@NotNull TruffleString tag, @NotNull Class<?> @NotNull[] elementTypes) {
+        @Override public boolean equals(Object obj) {
+            if (!(obj instanceof TupleTypeInputs other)) {
+                return false;
+            }
+
+            return tag == other.tag && Arrays.equals(elementTypes, other.elementTypes);
+        }
+
+        @Override public int hashCode() {
+            return 31 * tag.hashCode() + Arrays.hashCode(elementTypes);
+        }
+    }
+
     private static final LanguageReference<DatLanguage> REFERENCE = LanguageReference.create(DatLanguage.class);
 
     public static DatLanguage get(@Nullable Node node) {
@@ -19,8 +35,9 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
     }
 
     private final ConcurrentWeakCacheSet<TruffleString> internedStrings = new ConcurrentWeakCacheSet<>();
-    private final ConcurrentWeakCacheMap<TruffleString, DatLoneTag> loneTags = new ConcurrentWeakCacheMap<>();
+    private final ConcurrentWeakCacheMap<TupleTypeInputs, DatTupleType> tupleTypes = new ConcurrentWeakCacheMap<>();
 
+    private final TruffleString emptyString = getInternedString("");
     private final TruffleString unitString = getInternedString("()");
     private final TruffleString trueString = getInternedString("true");
     private final TruffleString falseString = getInternedString("false");
@@ -43,13 +60,15 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
     }
 
     @TruffleBoundary
-    public @NotNull DatLoneTag getLoneTag(@NotNull TruffleString name) {
-        return loneTags.getOrCompute(getInternedString(name), DatLoneTag::new);
+    public @NotNull DatTupleType getTupleType(@NotNull TruffleString tag, @NotNull Class<?> @NotNull[] elementTypes) {
+        return tupleTypes.getOrCompute(
+            new TupleTypeInputs(tag, elementTypes),
+            inputs -> new DatTupleType(this, inputs.tag, inputs.elementTypes)
+        );
     }
 
-    @TruffleBoundary
-    public @NotNull DatLoneTag getLoneTag(@NotNull String name) {
-        return loneTags.getOrCompute(getInternedString(name), DatLoneTag::new);
+    public @NotNull TruffleString getEmptyString() {
+        return emptyString;
     }
 
     public @NotNull TruffleString getTrueString() {
