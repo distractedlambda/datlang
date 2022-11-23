@@ -2,7 +2,7 @@ package org.datlang.language.nodes;
 
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
-import org.datlang.language.DatRuntimeException;
+import org.datlang.language.runtime.DatRuntimeException;
 
 import static com.oracle.truffle.api.CompilerDirectives.transferToInterpreter;
 

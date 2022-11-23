@@ -1,4 +1,4 @@
-package org.datlang.language;
+package org.datlang.language.runtime;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;

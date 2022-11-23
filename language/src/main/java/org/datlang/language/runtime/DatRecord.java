@@ -1,4 +1,4 @@
-package org.datlang.language;
+package org.datlang.language.runtime;
 
 import com.oracle.truffle.api.interop.TruffleObject;
 import org.jetbrains.annotations.NotNull;

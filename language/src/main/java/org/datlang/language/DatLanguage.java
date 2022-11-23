@@ -4,6 +4,7 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.strings.TruffleString;
+import org.datlang.language.runtime.DatLoneTag;
 import org.datlang.language.util.ConcurrentWeakCacheMap;
 import org.datlang.language.util.ConcurrentWeakCacheSet;
 import org.jetbrains.annotations.NotNull;
@@ -20,35 +21,35 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
     private final ConcurrentWeakCacheSet<TruffleString> internedStrings = new ConcurrentWeakCacheSet<>();
     private final ConcurrentWeakCacheMap<TruffleString, DatLoneTag> loneTags = new ConcurrentWeakCacheMap<>();
 
-    private final TruffleString unitString = internedString("()");
-    private final TruffleString trueString = internedString("true");
-    private final TruffleString falseString = internedString("false");
-    private final TruffleString nanString = internedString("NaN");
-    private final TruffleString infinityString = internedString("∞");
-    private final TruffleString negativeInfinityString = internedString("-∞");
+    private final TruffleString unitString = getInternedString("()");
+    private final TruffleString trueString = getInternedString("true");
+    private final TruffleString falseString = getInternedString("false");
+    private final TruffleString nanString = getInternedString("NaN");
+    private final TruffleString infinityString = getInternedString("∞");
+    private final TruffleString negativeInfinityString = getInternedString("-∞");
 
     @Override protected DatContext createContext(Env env) {
         return new DatContext();
     }
 
     @TruffleBoundary
-    public @NotNull TruffleString internedString(@NotNull TruffleString string) {
+    public @NotNull TruffleString getInternedString(@NotNull TruffleString string) {
         return internedStrings.intern(string.switchEncodingUncached(TruffleString.Encoding.UTF_8));
     }
 
     @TruffleBoundary
-    public @NotNull TruffleString internedString(@NotNull String string) {
-        return internedString(TruffleString.fromJavaStringUncached(string, TruffleString.Encoding.UTF_8));
+    public @NotNull TruffleString getInternedString(@NotNull String string) {
+        return getInternedString(TruffleString.fromJavaStringUncached(string, TruffleString.Encoding.UTF_8));
     }
 
     @TruffleBoundary
-    public @NotNull DatLoneTag loneTag(@NotNull TruffleString name) {
-        return loneTags.getOrCompute(internedString(name), DatLoneTag::new);
+    public @NotNull DatLoneTag getLoneTag(@NotNull TruffleString name) {
+        return loneTags.getOrCompute(getInternedString(name), DatLoneTag::new);
     }
 
     @TruffleBoundary
-    public @NotNull DatLoneTag loneTag(@NotNull String name) {
-        return loneTags.getOrCompute(internedString(name), DatLoneTag::new);
+    public @NotNull DatLoneTag getLoneTag(@NotNull String name) {
+        return loneTags.getOrCompute(getInternedString(name), DatLoneTag::new);
     }
 
     public @NotNull TruffleString getTrueString() {

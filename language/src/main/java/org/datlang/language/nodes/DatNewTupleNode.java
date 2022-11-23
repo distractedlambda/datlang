@@ -5,8 +5,8 @@ import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.strings.TruffleString;
-import org.datlang.language.DatTuple;
-import org.datlang.language.DatTupleType;
+import org.datlang.language.runtime.DatTuple;
+import org.datlang.language.runtime.DatTupleType;
 
 @NodeField(name = "tag", type = TruffleString.class)
 public abstract class DatNewTupleNode extends DatNode {

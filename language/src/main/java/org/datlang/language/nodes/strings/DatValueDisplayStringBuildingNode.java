@@ -4,12 +4,9 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.nodes.DirectCallNode;
-import com.oracle.truffle.api.nodes.IndirectCallNode;
 import com.oracle.truffle.api.strings.TruffleString;
 import com.oracle.truffle.api.strings.TruffleStringBuilder;
-import org.datlang.language.DatAggregateType;
-import org.datlang.language.DatLoneTag;
+import org.datlang.language.runtime.DatLoneTag;
 
 @GenerateUncached
 public abstract class DatValueDisplayStringBuildingNode extends DatStringBuildingNode {

@@ -5,7 +5,7 @@ import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.staticobject.StaticProperty;
 import com.oracle.truffle.api.strings.TruffleStringBuilder;
-import org.datlang.language.DatTuple;
+import org.datlang.language.runtime.DatTuple;
 
 public abstract class DatBuildTupleStringNode extends DatNode {
     public abstract void execute(TruffleStringBuilder builder, DatTuple tuple);

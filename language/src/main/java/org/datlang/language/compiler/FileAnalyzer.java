@@ -17,7 +17,6 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.datlang.language.DatLanguage;
-import org.datlang.language.DatParseException;
 import org.datlang.language.compiler.DatParser.BinIntegerExpressionContext;
 import org.datlang.language.compiler.DatParser.DecIntegerExpressionContext;
 import org.datlang.language.compiler.DatParser.DecRealExpressionContext;
@@ -32,13 +31,14 @@ import org.datlang.language.compiler.DatParser.TopLevelBindingContext;
 import org.datlang.language.compiler.DatParser.TopLevelFunctionContext;
 import org.datlang.language.compiler.DatParser.TopLevelImportContext;
 import org.datlang.language.compiler.DatParser.TrueExpressionContext;
-import org.datlang.language.nodes.DatDoubleConstantNodeGen;
 import org.datlang.language.nodes.DatExpressionNode;
-import org.datlang.language.nodes.DatFalseConstantNodeGen;
-import org.datlang.language.nodes.DatLongConstantNodeGen;
-import org.datlang.language.nodes.DatObjectConstantNodeGen;
 import org.datlang.language.nodes.DatProgramNode;
-import org.datlang.language.nodes.DatTrueConstantNodeGen;
+import org.datlang.language.nodes.constants.DatDoubleConstantNodeGen;
+import org.datlang.language.nodes.constants.DatFalseConstantNodeGen;
+import org.datlang.language.nodes.constants.DatLongConstantNodeGen;
+import org.datlang.language.nodes.constants.DatObjectConstantNodeGen;
+import org.datlang.language.nodes.constants.DatTrueConstantNodeGen;
+import org.datlang.language.runtime.DatParseException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -311,7 +311,7 @@ public final class FileAnalyzer implements ANTLRErrorListener {
             }
         }
 
-        return language.internedString(builder.toStringUncached());
+        return language.getInternedString(builder.toStringUncached());
     }
 
     private @NotNull BigInteger parseBinaryIntegerLiteral(@NotNull Token token) {
