@@ -1,24 +1,20 @@
 package org.datlang.language;
 
-import com.oracle.truffle.api.CompilerDirectives.ValueType;
 import com.oracle.truffle.api.interop.TruffleObject;
 import org.jetbrains.annotations.NotNull;
 
-@ValueType
-public final class DatRecord implements TruffleObject {
+public abstract class DatRecord implements TruffleObject {
     private final @NotNull DatRecordType type;
-    private final @NotNull Object storage;
 
-    public DatRecord(@NotNull DatRecordType type, @NotNull Object storage) {
+    public DatRecord(@NotNull DatRecordType type) {
         this.type = type;
-        this.storage = storage;
     }
 
-    public @NotNull DatRecordType getType() {
+    public final @NotNull DatRecordType getType() {
         return type;
     }
 
-    public @NotNull Object getStorage() {
-        return storage;
+    public interface Factory {
+        @NotNull DatRecord newInstance(@NotNull DatRecordType type);
     }
 }
