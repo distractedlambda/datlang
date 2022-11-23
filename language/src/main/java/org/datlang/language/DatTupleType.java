@@ -2,6 +2,7 @@ package org.datlang.language;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.staticobject.StaticProperty;
 import com.oracle.truffle.api.strings.TruffleString;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +23,62 @@ public final class DatTupleType extends DatTaggedAggregateType {
         this.instanceFactory = instanceFactory;
     }
 
-    public @NotNull DatTuple newInstance() {
-        return instanceFactory.newInstance(this);
+    @ExplodeLoop
+    public @NotNull DatTuple newInstance(@NotNull Object @NotNull[] elements) {
+        assert elements.length == elementProperties.length;
+
+        var instance = instanceFactory.newInstance(this);
+
+        for (var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            var property = elementProperties[i];
+
+            if (element instanceof Boolean b) {
+                property.setBoolean(instance, b);
+            }
+            else if (element instanceof Long l) {
+                property.setLong(instance, l);
+            }
+            else if (element instanceof Double d) {
+                property.setDouble(instance, d);
+            }
+            else {
+                property.setObject(instance, element);
+            }
+        }
+
+        return instance;
+    }
+
+    @ExplodeLoop
+    public boolean isCompatible(@NotNull Object @NotNull[] elements) {
+        assert elements.length == elementProperties.length;
+
+        for (var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            var propertyType = elementProperties[i].getType();
+
+            if (element instanceof Boolean) {
+                if (propertyType != boolean.class) {
+                    return false;
+                }
+            }
+            else if (element instanceof Long) {
+                if (propertyType != long.class) {
+                    return false;
+                }
+            }
+            else if (element instanceof Double) {
+                if (propertyType != double.class) {
+                    return false;
+                }
+            }
+            else if (propertyType != Object.class) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public int getElementCount() {
@@ -44,13 +99,19 @@ public final class DatTupleType extends DatTaggedAggregateType {
 
     public static final class ElementProperty extends StaticProperty {
         private final @NotNull String id;
+        private final @NotNull Class<?> type;
 
-        public ElementProperty(int index) {
+        public ElementProperty(int index, @NotNull Class<?> type) {
             this.id = Integer.toString(index);
+            this.type = type;
         }
 
         @Override public @NotNull String getId() {
             return id;
+        }
+
+        public @NotNull Class<?> getType() {
+            return type;
         }
     }
 }
