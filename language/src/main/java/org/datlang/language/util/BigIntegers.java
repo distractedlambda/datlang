@@ -1,6 +1,7 @@
 package org.datlang.language.util;
 
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import org.datlang.language.DatLanguage;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -11,6 +12,11 @@ public final class BigIntegers {
     @TruffleBoundary
     public static double toDouble(@NotNull BigInteger value) {
         return value.doubleValue();
+    }
+
+    @TruffleBoundary
+    public static @NotNull Object negate(@NotNull BigInteger value) {
+        return normalize(value.negate());
     }
 
     @TruffleBoundary
@@ -29,9 +35,7 @@ public final class BigIntegers {
             return value.longValueExact();
         }
         catch (ArithmeticException exception) {
-            return value;
+            return DatLanguage.get(null).getInternedBigInteger(value);
         }
     }
-
-    public static final @NotNull BigInteger MAX_LONG_PLUS_1 = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE);
 }

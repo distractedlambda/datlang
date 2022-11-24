@@ -12,6 +12,7 @@ import org.datlang.language.util.ConcurrentWeakCacheSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.function.Function;
 
@@ -41,15 +42,21 @@ public final class DatLanguage extends TruffleLanguage<DatContext> implements Da
     private final Function<TruffleString, DatTag> globalTagFactory = key -> new DatTag(key, this);
 
     private final ConcurrentWeakCacheSet<TruffleString> internedStrings = new ConcurrentWeakCacheSet<>();
+    private final ConcurrentWeakCacheSet<BigInteger> internedBigIntegers = new ConcurrentWeakCacheSet<>();
+
     private final ConcurrentWeakCacheMap<TupleTypeInputs, DatTupleType> tupleTypes = new ConcurrentWeakCacheMap<>();
 
-    private final TruffleString emptyString = getInternedString("");
-    private final TruffleString unitString = getInternedString("()");
-    private final TruffleString trueString = getInternedString("true");
-    private final TruffleString falseString = getInternedString("false");
-    private final TruffleString nanString = getInternedString("NaN");
-    private final TruffleString infinityString = getInternedString("∞");
-    private final TruffleString negativeInfinityString = getInternedString("-∞");
+    private final @NotNull TruffleString emptyString = getInternedString("");
+    private final @NotNull TruffleString unitString = getInternedString("()");
+    private final @NotNull TruffleString trueString = getInternedString("true");
+    private final @NotNull TruffleString falseString = getInternedString("false");
+    private final @NotNull TruffleString nanString = getInternedString("NaN");
+    private final @NotNull TruffleString infinityString = getInternedString("∞");
+    private final @NotNull TruffleString negativeInfinityString = getInternedString("-∞");
+
+    private final @NotNull BigInteger maxLongPlusOne = getInternedBigInteger(
+        BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE)
+    );
 
     @Override protected DatContext createContext(Env env) {
         return new DatContext();
@@ -63,6 +70,11 @@ public final class DatLanguage extends TruffleLanguage<DatContext> implements Da
     @TruffleBoundary
     public @NotNull TruffleString getInternedString(@NotNull String string) {
         return getInternedString(TruffleString.fromJavaStringUncached(string, TruffleString.Encoding.UTF_8));
+    }
+
+    @TruffleBoundary
+    public @NotNull BigInteger getInternedBigInteger(@NotNull BigInteger value) {
+        return internedBigIntegers.intern(value);
     }
 
     @TruffleBoundary
@@ -104,5 +116,9 @@ public final class DatLanguage extends TruffleLanguage<DatContext> implements Da
 
     public @NotNull TruffleString getNegativeInfinityString() {
         return negativeInfinityString;
+    }
+
+    public @NotNull BigInteger getMaxLongPlusOne() {
+        return maxLongPlusOne;
     }
 }
