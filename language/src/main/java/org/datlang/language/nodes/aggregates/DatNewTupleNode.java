@@ -3,16 +3,16 @@ package org.datlang.language.nodes.aggregates;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.strings.TruffleString;
 import org.datlang.language.nodes.DatNode;
+import org.datlang.language.runtime.DatTag;
 import org.datlang.language.runtime.DatTuple;
 import org.datlang.language.runtime.DatTupleType;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class DatNewTupleNode extends DatNode {
-    private final @NotNull TruffleString tag;
+    private final @NotNull DatTag tag;
 
-    protected DatNewTupleNode(@NotNull TruffleString tag) {
+    protected DatNewTupleNode(@NotNull DatTag tag) {
         this.tag = tag;
     }
 

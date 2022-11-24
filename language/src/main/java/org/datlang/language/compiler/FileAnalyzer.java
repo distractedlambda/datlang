@@ -169,10 +169,11 @@ public final class FileAnalyzer implements ANTLRErrorListener {
     }
 
     private @NotNull DatExpressionNode analyze(@NotNull TupleExpressionContext context) {
-        return DatTupleExpressionNodeGen.create(
-            tagTokenToInternedString(context.tag),
-            context.elements.stream().map(this::analyze).toArray(DatExpressionNode[]::new)
-        );
+        throw new UnsupportedOperationException("TODO");
+        // return DatTupleExpressionNodeGen.create(
+        //     tagTokenToInternedString(context.tag),
+        //     context.elements.stream().map(this::analyze).toArray(DatExpressionNode[]::new)
+        // );
     }
 
     private @NotNull TruffleString tagTokenToInternedString(@Nullable Token token) {

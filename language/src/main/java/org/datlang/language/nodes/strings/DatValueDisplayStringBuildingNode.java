@@ -6,7 +6,6 @@ import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.strings.TruffleString;
 import com.oracle.truffle.api.strings.TruffleStringBuilder;
-import org.datlang.language.runtime.DatLoneTag;
 
 @GenerateUncached
 public abstract class DatValueDisplayStringBuildingNode extends DatStringBuildingNode {
@@ -139,14 +138,5 @@ public abstract class DatValueDisplayStringBuildingNode extends DatStringBuildin
             case 14 -> 'e';
             default -> 'f';
         });
-    }
-
-    @Specialization
-    protected void doSymbol(
-        TruffleStringBuilder builder,
-        DatLoneTag value,
-        @Cached TruffleStringBuilder.AppendStringNode appendStringNode
-    ) {
-        appendStringNode.execute(builder, value.getName());
     }
 }

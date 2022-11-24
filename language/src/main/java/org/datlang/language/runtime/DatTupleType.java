@@ -5,7 +5,6 @@ import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.staticobject.StaticProperty;
 import com.oracle.truffle.api.staticobject.StaticShape;
-import com.oracle.truffle.api.strings.TruffleString;
 import org.datlang.language.DatLanguage;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +16,7 @@ public final class DatTupleType extends DatTaggedAggregateType {
 
     public DatTupleType(
         @NotNull DatLanguage language,
-        @NotNull TruffleString tag,
+        @NotNull DatTag tag,
         @NotNull Class<?> @NotNull[] elementTypes
     ) {
         super(tag);

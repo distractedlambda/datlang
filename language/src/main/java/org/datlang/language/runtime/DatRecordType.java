@@ -13,7 +13,7 @@ public final class DatRecordType extends DatTaggedAggregateType {
     private final @NotNull MemberProperty @NotNull[] memberProperties;
 
     public DatRecordType(
-        @NotNull TruffleString tag,
+        @NotNull DatTag tag,
         @NotNull DatRecord.Factory instanceFactory,
         @NotNull MemberProperty @NotNull[] memberProperties
     ) {

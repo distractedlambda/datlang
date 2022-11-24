@@ -1,16 +1,15 @@
 package org.datlang.language.runtime;
 
-import com.oracle.truffle.api.strings.TruffleString;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class DatTaggedAggregateType extends DatAggregateType {
-    private final @NotNull TruffleString tag;
+    private final @NotNull DatTag tag;
 
-    protected DatTaggedAggregateType(@NotNull TruffleString tag) {
+    protected DatTaggedAggregateType(@NotNull DatTag tag) {
         this.tag = tag;
     }
 
-    public final @NotNull TruffleString getTag() {
+    public final @NotNull DatTag getTag() {
         return tag;
     }
 }

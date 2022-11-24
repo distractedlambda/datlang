@@ -4,16 +4,16 @@ import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
-import com.oracle.truffle.api.strings.TruffleString;
 import org.datlang.language.nodes.aggregates.DatNewTupleNode;
+import org.datlang.language.runtime.DatTag;
 import org.datlang.language.runtime.DatTuple;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class DatTupleExpressionNode extends DatExpressionNode {
-    protected final @NotNull TruffleString tag;
+    protected final @NotNull DatTag tag;
     @Children private final @NotNull DatExpressionNode @NotNull[] elementNodes;
 
-    protected DatTupleExpressionNode(@NotNull TruffleString tag, @NotNull DatExpressionNode @NotNull[] elementNodes) {
+    protected DatTupleExpressionNode(@NotNull DatTag tag, @NotNull DatExpressionNode @NotNull[] elementNodes) {
         this.tag = tag;
         this.elementNodes = elementNodes;
     }

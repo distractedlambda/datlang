@@ -4,6 +4,8 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.strings.TruffleString;
+import org.datlang.language.runtime.DatTag;
+import org.datlang.language.runtime.DatTagScope;
 import org.datlang.language.runtime.DatTupleType;
 import org.datlang.language.util.ConcurrentWeakCacheMap;
 import org.datlang.language.util.ConcurrentWeakCacheSet;
@@ -11,10 +13,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 @TruffleLanguage.Registration(id = "dat", name = "Dat")
-public final class DatLanguage extends TruffleLanguage<DatContext> {
-    private record TupleTypeInputs(@NotNull TruffleString tag, @NotNull Class<?> @NotNull[] elementTypes) {
+public final class DatLanguage extends TruffleLanguage<DatContext> implements DatTagScope {
+    private record TupleTypeInputs(@NotNull DatTag tag, @NotNull Class<?> @NotNull[] elementTypes) {
         @Override public boolean equals(Object obj) {
             if (!(obj instanceof TupleTypeInputs other)) {
                 return false;
@@ -34,7 +37,10 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
         return REFERENCE.get(node);
     }
 
+    private final Function<TruffleString, DatTag> globalTagFactory = key -> new DatTag(key, this);
+
     private final ConcurrentWeakCacheSet<TruffleString> internedStrings = new ConcurrentWeakCacheSet<>();
+    private final ConcurrentWeakCacheMap<TruffleString, DatTag> globalTags = new ConcurrentWeakCacheMap<>();
     private final ConcurrentWeakCacheMap<TupleTypeInputs, DatTupleType> tupleTypes = new ConcurrentWeakCacheMap<>();
 
     private final TruffleString emptyString = getInternedString("");
@@ -60,7 +66,12 @@ public final class DatLanguage extends TruffleLanguage<DatContext> {
     }
 
     @TruffleBoundary
-    public @NotNull DatTupleType getTupleType(@NotNull TruffleString tag, @NotNull Class<?> @NotNull[] elementTypes) {
+    @Override public @NotNull DatTag getTag(@NotNull TruffleString name) {
+        return globalTags.getOrCompute(name, globalTagFactory);
+    }
+
+    @TruffleBoundary
+    public @NotNull DatTupleType getTupleType(@NotNull DatTag tag, @NotNull Class<?> @NotNull[] elementTypes) {
         return tupleTypes.getOrCompute(
             new TupleTypeInputs(tag, elementTypes),
             inputs -> new DatTupleType(this, inputs.tag, inputs.elementTypes)
