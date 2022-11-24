@@ -1,4 +1,4 @@
-package org.datlang.language.nodes;
+package org.datlang.language.nodes.expressions;
 
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -6,11 +6,11 @@ import org.datlang.language.runtime.DatRuntimeException;
 
 import static com.oracle.truffle.api.CompilerDirectives.transferToInterpreter;
 
-public abstract class DatBinaryPlusOperatorNode extends DatBinaryOperatorNode {
+public abstract class DatBinaryMinusExpressionNode extends DatBinaryExpressionNode {
     @Specialization
     protected long longs(long lhs, long rhs) {
         try {
-            return Math.addExact(lhs, rhs);
+            return Math.subtractExact(lhs, rhs);
         }
         catch (ArithmeticException exception) {
             transferToInterpreter();
@@ -30,7 +30,7 @@ public abstract class DatBinaryPlusOperatorNode extends DatBinaryOperatorNode {
 
     @Specialization
     protected double doubles(double lhs, double rhs) {
-        return lhs + rhs;
+        return lhs - rhs;
     }
 
     @Fallback

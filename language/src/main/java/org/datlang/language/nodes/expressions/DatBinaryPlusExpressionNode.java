@@ -1,4 +1,4 @@
-package org.datlang.language.nodes;
+package org.datlang.language.nodes.expressions;
 
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -6,19 +6,15 @@ import org.datlang.language.runtime.DatRuntimeException;
 
 import static com.oracle.truffle.api.CompilerDirectives.transferToInterpreter;
 
-public abstract class DatBinaryDivideOperatorNode extends DatBinaryOperatorNode {
+public abstract class DatBinaryPlusExpressionNode extends DatBinaryExpressionNode {
     @Specialization
     protected long longs(long lhs, long rhs) {
-        if (rhs == 0) {
-            transferToInterpreter();
-            throw DatRuntimeException.create("Integer division by 0", this);
+        try {
+            return Math.addExact(lhs, rhs);
         }
-        else if (lhs == Long.MIN_VALUE && rhs == -1) {
+        catch (ArithmeticException exception) {
             transferToInterpreter();
             throw DatRuntimeException.create("Integer overflow", this);
-        }
-        else {
-            return lhs / rhs;
         }
     }
 
@@ -34,7 +30,7 @@ public abstract class DatBinaryDivideOperatorNode extends DatBinaryOperatorNode 
 
     @Specialization
     protected double doubles(double lhs, double rhs) {
-        return lhs / rhs;
+        return lhs + rhs;
     }
 
     @Fallback

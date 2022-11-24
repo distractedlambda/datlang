@@ -1,4 +1,4 @@
-package org.datlang.language.nodes;
+package org.datlang.language.nodes.expressions;
 
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -6,7 +6,7 @@ import org.datlang.language.runtime.DatRuntimeException;
 
 import static com.oracle.truffle.api.CompilerDirectives.transferToInterpreter;
 
-public abstract class DatBinaryTimesOperatorNode extends DatBinaryOperatorNode {
+public abstract class DatBinaryTimesExpressionNode extends DatBinaryExpressionNode {
     @Specialization
     protected long longs(long lhs, long rhs) {
         try {

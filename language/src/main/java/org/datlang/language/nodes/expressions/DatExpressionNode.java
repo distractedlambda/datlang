@@ -1,7 +1,8 @@
-package org.datlang.language.nodes;
+package org.datlang.language.nodes.expressions;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import org.datlang.language.nodes.DatProgramNode;
 
 import static org.datlang.language.DatTypeSystemGen.expectBoolean;
 import static org.datlang.language.DatTypeSystemGen.expectDouble;

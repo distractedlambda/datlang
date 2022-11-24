@@ -5,7 +5,6 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.strings.TruffleString;
-import org.datlang.language.nodes.DatExpressionNode;
 import org.datlang.language.nodes.aggregates.DatNewTupleNode;
 import org.datlang.language.runtime.DatTuple;
 import org.jetbrains.annotations.NotNull;

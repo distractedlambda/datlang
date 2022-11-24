@@ -1,8 +1,9 @@
-package org.datlang.language.nodes;
+package org.datlang.language.nodes.expressions;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import com.oracle.truffle.api.profiles.ConditionProfile;
+import org.datlang.language.nodes.expressions.DatExpressionNode;
 
 public final class DatConditionalExpressionNode extends DatExpressionNode {
     @Child private DatExpressionNode conditionNode;

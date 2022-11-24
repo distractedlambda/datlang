@@ -2,7 +2,7 @@ package org.datlang.language.nodes.constants;
 
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
-import org.datlang.language.nodes.DatExpressionNode;
+import org.datlang.language.nodes.expressions.DatExpressionNode;
 
 @NodeField(name = "value", type = Object.class)
 public abstract class DatObjectConstantNode extends DatExpressionNode {

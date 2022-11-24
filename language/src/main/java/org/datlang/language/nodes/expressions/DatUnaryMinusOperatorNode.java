@@ -1,6 +1,7 @@
-package org.datlang.language.nodes;
+package org.datlang.language.nodes.expressions;
 
 import com.oracle.truffle.api.dsl.Specialization;
+import org.datlang.language.nodes.expressions.DatUnaryOperatorNode;
 import org.datlang.language.runtime.DatRuntimeException;
 
 import static com.oracle.truffle.api.CompilerDirectives.transferToInterpreter;

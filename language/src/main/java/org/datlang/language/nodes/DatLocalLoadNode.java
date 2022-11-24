@@ -3,6 +3,7 @@ package org.datlang.language.nodes;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import org.datlang.language.nodes.expressions.DatExpressionNode;
 
 import static com.oracle.truffle.api.CompilerDirectives.transferToInterpreter;
 

@@ -1,9 +1,9 @@
-package org.datlang.language.nodes;
+package org.datlang.language.nodes.expressions;
 
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 
-public abstract class DatEqualityOperatorNode extends DatBinaryOperatorNode {
+public abstract class DatEqualityExpressionNode extends DatBinaryExpressionNode {
     @Specialization
     protected boolean booleans(boolean lhs, boolean rhs) {
         return lhs == rhs;
