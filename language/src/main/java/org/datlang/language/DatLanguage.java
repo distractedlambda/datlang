@@ -37,10 +37,10 @@ public final class DatLanguage extends TruffleLanguage<DatContext> implements Da
         return REFERENCE.get(node);
     }
 
+    private final ConcurrentWeakCacheMap<TruffleString, DatTag> globalTags = new ConcurrentWeakCacheMap<>();
     private final Function<TruffleString, DatTag> globalTagFactory = key -> new DatTag(key, this);
 
     private final ConcurrentWeakCacheSet<TruffleString> internedStrings = new ConcurrentWeakCacheSet<>();
-    private final ConcurrentWeakCacheMap<TruffleString, DatTag> globalTags = new ConcurrentWeakCacheMap<>();
     private final ConcurrentWeakCacheMap<TupleTypeInputs, DatTupleType> tupleTypes = new ConcurrentWeakCacheMap<>();
 
     private final TruffleString emptyString = getInternedString("");

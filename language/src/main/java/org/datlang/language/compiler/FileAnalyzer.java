@@ -17,30 +17,18 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.datlang.language.DatLanguage;
-import org.datlang.language.compiler.DatParser.BinIntegerExpressionContext;
-import org.datlang.language.compiler.DatParser.DecIntegerExpressionContext;
-import org.datlang.language.compiler.DatParser.DecRealExpressionContext;
 import org.datlang.language.compiler.DatParser.ExpressionContext;
-import org.datlang.language.compiler.DatParser.FalseExpressionContext;
 import org.datlang.language.compiler.DatParser.FileContext;
-import org.datlang.language.compiler.DatParser.HexIntegerExpressionContext;
-import org.datlang.language.compiler.DatParser.HexRealExpressionContext;
-import org.datlang.language.compiler.DatParser.OctIntegerExpressionContext;
 import org.datlang.language.compiler.DatParser.ParenthesizedExpressionContext;
-import org.datlang.language.compiler.DatParser.StringExpressionContext;
+import org.datlang.language.compiler.DatParser.SimpleConstantExpressionContext;
 import org.datlang.language.compiler.DatParser.TopLevelBindingContext;
 import org.datlang.language.compiler.DatParser.TopLevelFunctionContext;
 import org.datlang.language.compiler.DatParser.TopLevelImportContext;
-import org.datlang.language.compiler.DatParser.TrueExpressionContext;
 import org.datlang.language.compiler.DatParser.TupleExpressionContext;
 import org.datlang.language.nodes.DatProgramNode;
-import org.datlang.language.nodes.constants.DatDoubleConstantNodeGen;
-import org.datlang.language.nodes.constants.DatFalseConstantNodeGen;
 import org.datlang.language.nodes.constants.DatLongConstantNodeGen;
 import org.datlang.language.nodes.constants.DatObjectConstantNodeGen;
-import org.datlang.language.nodes.constants.DatTrueConstantNodeGen;
 import org.datlang.language.nodes.expressions.DatExpressionNode;
-import org.datlang.language.nodes.expressions.DatTupleExpressionNodeGen;
 import org.datlang.language.runtime.DatParseException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -130,32 +118,8 @@ public final class FileAnalyzer implements ANTLRErrorListener {
     }
 
     private @NotNull DatExpressionNode analyze(@NotNull ExpressionContext context) {
-        if (context instanceof TrueExpressionContext trueExpressionContext) {
-            return analyze(trueExpressionContext);
-        }
-        else if (context instanceof FalseExpressionContext falseExpressionContext) {
-            return analyze(falseExpressionContext);
-        }
-        else if (context instanceof BinIntegerExpressionContext binIntegerExpressionContext) {
-            return analyze(binIntegerExpressionContext);
-        }
-        else if (context instanceof OctIntegerExpressionContext octIntegerExpressionContext) {
-            return analyze(octIntegerExpressionContext);
-        }
-        else if (context instanceof DecIntegerExpressionContext decIntegerExpressionContext) {
-            return analyze(decIntegerExpressionContext);
-        }
-        else if (context instanceof HexIntegerExpressionContext hexIntegerExpressionContext) {
-            return analyze(hexIntegerExpressionContext);
-        }
-        else if (context instanceof DecRealExpressionContext decRealExpressionContext) {
-            return analyze(decRealExpressionContext);
-        }
-        else if (context instanceof HexRealExpressionContext hexRealExpressionContext) {
-            return analyze(hexRealExpressionContext);
-        }
-        else if (context instanceof StringExpressionContext stringExpressionContext) {
-            return analyze(stringExpressionContext);
+        if (context instanceof SimpleConstantExpressionContext simpleConstantExpressionContext) {
+            return analyze(simpleConstantExpressionContext);
         }
         else if (context instanceof ParenthesizedExpressionContext parenthesizedExpressionContext) {
             return analyze(parenthesizedExpressionContext);
@@ -187,42 +151,6 @@ public final class FileAnalyzer implements ANTLRErrorListener {
 
     private @NotNull DatExpressionNode analyze(@NotNull ParenthesizedExpressionContext context) {
         return analyze(context.inner);
-    }
-
-    private @NotNull DatExpressionNode analyze(@NotNull StringExpressionContext context) {
-        return setSourceRange(DatObjectConstantNodeGen.create(parseStringLiteral(context.token)), context);
-    }
-
-    private @NotNull DatExpressionNode analyze(@NotNull TrueExpressionContext context) {
-        return setSourceRange(DatTrueConstantNodeGen.create(), context);
-    }
-
-    private @NotNull DatExpressionNode analyze(@NotNull FalseExpressionContext context) {
-        return setSourceRange(DatFalseConstantNodeGen.create(), context);
-    }
-
-    private @NotNull DatExpressionNode analyze(@NotNull BinIntegerExpressionContext context) {
-        return setSourceRange(makeIntegerConstantNode(parseBinaryIntegerLiteral(context.token)), context);
-    }
-
-    private @NotNull DatExpressionNode analyze(@NotNull OctIntegerExpressionContext context) {
-        return setSourceRange(makeIntegerConstantNode(parseOctalIntegerLiteral(context.token)), context);
-    }
-
-    private @NotNull DatExpressionNode analyze(@NotNull DecIntegerExpressionContext context) {
-        return setSourceRange(makeIntegerConstantNode(parseDecimalIntegerLiteral(context.token)), context);
-    }
-
-    private @NotNull DatExpressionNode analyze(@NotNull HexIntegerExpressionContext context) {
-        return setSourceRange(makeIntegerConstantNode(parseHexadecimalIntegerLiteral(context.token)), context);
-    }
-
-    private @NotNull DatExpressionNode analyze(@NotNull DecRealExpressionContext context) {
-        return setSourceRange(DatDoubleConstantNodeGen.create(parseDecimalReal(context.token)), context);
-    }
-
-    private @NotNull DatExpressionNode analyze(@NotNull HexRealExpressionContext context) {
-        return setSourceRange(DatDoubleConstantNodeGen.create(parseHexadecimalReal(context.token)), context);
     }
 
     private @NotNull DatExpressionNode makeIntegerConstantNode(@NotNull BigInteger value) {

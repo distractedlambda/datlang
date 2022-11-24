@@ -16,20 +16,10 @@ topLevelItem:
 pattern:
     token=LowerIdentifier #BindingPattern
   | '_' #WildcardPattern
-  | 'true' #TruePattern
-  | 'false' #FalsePattern
-  | token=BinInteger #BinIntegerPattern
-  | token=OctInteger #OctIntegerPattern
-  | token=DecInteger #DecIntegerPattern
-  | token=DecReal #DecRealPattern
-  | token=HexInteger #HexIntegerPattern
-  | token=HexReal #HexRealPattern
-  | token=String #StringPattern
-  | name=UpperIdentifier ('(' ')')? #SymbolPattern
-  | '(' ')' #UnitPattern
+  | constant=simpleConstant #SimpleConstantPattern
   | '(' inner=pattern ')' #ParenthesizedPattern
-  | tag=UpperIdentifier? '(' elements+=pattern (',' elements+=pattern)* ','? ')' #TuplePattern
-  | tag=UpperIdentifier? '(' keys+=LowerIdentifier ':' values+=pattern (',' keys+=LowerIdentifier ':' values+=pattern)* (',' ellipses='...')? ','? ')' #RecordPattern
+  | tag=(UpperIdentifier | ModulePrivateUpperIdentifer | FilePrivateUpperIdentifier)? '(' elements+=pattern (',' elements+=pattern)* ','? ')' #TuplePattern
+  | tag=(UpperIdentifier | ModulePrivateUpperIdentifer | FilePrivateUpperIdentifier)? '(' keys+=LowerIdentifier ':' values+=pattern (',' keys+=LowerIdentifier ':' values+=pattern)* (',' ellipses='...')? ','? ')' #RecordPattern
   | name=LowerIdentifier '@' inner=pattern #DualBindingPattern
   | lhs=pattern '|' rhs=pattern #AlternativePattern
   | base=pattern 'where' condition=expression #GuardedPattern
@@ -37,23 +27,13 @@ pattern:
 
 expression:
     (moduleName=UpperIdentifier '.')? name=LowerIdentifier #BindingReferenceExpression
-  | name=UpperIdentifier ('(' ')')? #SymbolExpression
-  | token=BinInteger #BinIntegerExpression
-  | token=OctInteger #OctIntegerExpression
-  | token=DecInteger #DecIntegerExpression
-  | token=DecReal #DecRealExpression
-  | token=HexInteger #HexIntegerExpression
-  | token=HexReal #HexRealExpression
-  | token=String #StringExpression
-  | '(' ')' #UnitExpression
+  | constant=simpleConstant #SimpleConstantExpression
   | '(' inner=expression ')' #ParenthesizedExpression
-  | tag=UpperIdentifier? '(' elements+=expression (',' elements+=expression)* ','? ')' #TupleExpression
-  | tag=UpperIdentifier? '(' keys+=LowerIdentifier ':' values+=expression (',' keys+=LowerIdentifier ':' values+=expression)* ','? ')' #RecordExpression
+  | tag=(UpperIdentifier | ModulePrivateUpperIdentifer | FilePrivateUpperIdentifier)? '(' elements+=expression (',' elements+=expression)* ','? ')' #TupleExpression
+  | tag=(UpperIdentifier | ModulePrivateUpperIdentifer | FilePrivateUpperIdentifier)? '(' keys+=LowerIdentifier ':' values+=expression (',' keys+=LowerIdentifier ':' values+=expression)* ','? ')' #RecordExpression
   | '[' (elements+=expression (',' elements+=expression)* ','?)? ']' #ListExpression
   | '{' (elements+=expression (',' elements+=expression)* ','?)? '}' #SetExpression
   | '{' (keys+=expression ':' values+=expression (',' keys+=expression ':' values+=expression)* ','?)? '}' #MapExpression
-  | 'true' #TrueExpression
-  | 'false' #FalseExpression
   | (moduleName=UpperIdentifier '.')? name=LowerIdentifier (arguments+=expression)+ #NamedFunctionCallExpression
   | '(' callee=expression ')' (arguments+=expression)+ #ComputedFunctionCallExpression
   | op=('!' | '~' | '+' | '-') operand=expression #PrefixOpExpression
@@ -81,6 +61,26 @@ expression:
   | label=LowerIdentifier '#' body=expression #LabeledExpression
   | '\\' (parameters+=pattern)+ '->' body=expression #LambdaExpression
   | '\\' '|' patterns+=pattern '->' bodies+=expression ('|' patterns+=pattern '->' bodies+=expression)* #MatchLambdaExpression
+;
+
+simpleConstant:
+    token=(UpperIdentifier | ModulePrivateUpperIdentifer | FilePrivateUpperIdentifier) ('(' ')')?
+  | token=BinInteger
+  | token=ImaginaryBinInteger
+  | token=OctInteger
+  | token=ImaginaryOctInteger
+  | token=DecInteger
+  | token=ImaginaryDecInteger
+  | token=DecFloat
+  | token=ImaginaryDecFloat
+  | token=HexInteger
+  | token=ImaginaryHexInteger
+  | token=HexFloat
+  | token=ImaginaryHexFloat
+  | token=String
+  | token='true'
+  | token='false'
+  | '(' ')'
 ;
 
 functionBinding:
@@ -156,6 +156,24 @@ Underscore: '_';
 String:
     '"' StringToken+ '"';
 
+ImaginaryBinInteger:
+    BinInteger 'i';
+
+ImaginaryOctInteger:
+    OctInteger 'i';
+
+ImaginaryDecInteger:
+    DecInteger 'i';
+
+ImaginaryDecFloat:
+    DecFloat 'i';
+
+ImaginaryHexInteger:
+    HexInteger 'i';
+
+ImaginaryHexFloat:
+    HexFloat 'i';
+
 BinInteger:
     '0' [bB] BinDigit ('_' BinDigit)* ([pP] '+'? DecDigit ('_' DecDigit)*)?;
 
@@ -165,17 +183,23 @@ OctInteger:
 DecInteger:
     DecDigit ('_' DecDigit)* ([eE] '+'? DecDigit ('_' DecDigit)*)?;
 
-DecReal:
+DecFloat:
     ('.' DecDigit ('_' DecDigit)* | DecDigit ('_' DecDigit)* '.' (DecDigit ('_' DecDigit)*)?) ([eE] [+\-]? DecDigit ('_' DecDigit)*)?;
 
 HexInteger:
     '0' [xX] HexDigit ('_' HexDigit)* ([pP] '+'? DecDigit ('_' DecDigit)*)?;
 
-HexReal:
+HexFloat:
     '0' [xX] ('.' HexDigit ('_' HexDigit)* | HexDigit ('_' HexDigit)* '.' (HexDigit ('_' HexDigit)*)?) ([pP] [+\-]? DecDigit ('_' DecDigit)*)?;
 
 LowerIdentifier:
     [\p{Ll}] IdentifierRest*;
+
+ModulePrivateUpperIdentifer:
+    '#' UpperIdentifier;
+
+FilePrivateUpperIdentifier:
+    '##' UpperIdentifier;
 
 UpperIdentifier:
     [\p{Lt}\p{Lu}] IdentifierRest*;
